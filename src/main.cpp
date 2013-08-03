@@ -3,7 +3,8 @@
 int main(int argc, char *argv[])
 {
   //parameters
-  vector<string> args(argv+2, argv+argc);
+  vector<string> args(argv+1, argv+argc);
+  string output = getOutput(args);
   
   //Data
   vector<Individual*> sample;
@@ -20,7 +21,7 @@ int main(int argc, char *argv[])
   //compute the statisc;
   vector<double> res;
   //output test
-  string output = argv[1];
+  //string output = argv[1];
   res = glmAssoc(sample, locus, SNP, output);
   for(vector<double>::iterator it=res.begin(); it!=res.end(); it++)
     cout<<(*it)<<'\t';

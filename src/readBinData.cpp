@@ -3,26 +3,68 @@
 //init parameters
 Parameter par; 
 
+string extern getOutput(vector<string>& args)
+{
+  string res = "";
+  for(vector<string>::iterator it=args.begin(); it!=args.end(); it++)
+    if((*it)=="-o")
+      {
+	it++;
+	res = (*it);
+      }
+  if(res=="")
+    {
+      error("No output file");
+    }
+  return res;
+}
+
 void extern initParameters(vector<string>& args)
 {
   vector<string>::iterator it = args.begin();
-  par.famfile = (*it)+".fam";
-  par.snpfile = (*it)+".bim";
-  par.bitfile = (*it)+".bed";
-  it++;
-  par.phenofile = (*it);
-  it++;
-  if(it==args.end()) 
-    error("No phenotypes");
-  
-  while(it!=args.end())
-    {
-      par.pheno_names.push_back(*it);
-      it++;
-    }
 	//par.pheno_names.push_back("auto_r_se_bend");
 	//par.pheno_names.push_back("master_al_od_bend");
-  par.outputfile="test";
+  bool lockon = false;
+
+  while(it!=args.end())
+    {
+      string temp = (*it);
+      if(temp=="-bfile")
+	{
+	  it++; lockon = false;
+	  par.famfile = (*it)+".fam";
+	  par.snpfile = (*it)+".bim";
+	  par.bitfile = (*it)+".bed";
+	  it++;
+	}
+      else if(temp=="-phenofile")
+	{
+	  it++; lockon = false;
+	  par.phenofile = (*it);
+	  it++;
+	}
+      else if(temp=="-phenotypes")
+	{
+	  lockon = true;
+	  it++;
+	}
+      else if(temp=="-o")
+	{
+	  lockon = false;
+	  it++;
+	}
+      else
+	{
+	  if(lockon)
+	    {
+	      par.pheno_names.push_back(*it);
+	      it++;
+	    }
+	  else
+	    it++;
+	}
+      
+    }
 }
 
 void extern error(string msg)
