@@ -65,6 +65,7 @@ void extern initParameters(vector<string>& args)
 	}
       
     }
+  cout<<"phenotypes: "<<par.pheno_names.size()<<endl;
 }
 
 void extern error(string msg)
@@ -297,6 +298,8 @@ void extern readBinData(vector<Individual*> & sample, vector<Locus*> & locus, ve
   
   stable_sort(locus.begin(), locus.end(), less<Locus*>());
   stable_sort(ordered.begin(), ordered.end());
+  
+  
 
   c = 0;
   for(int i=0; i<locus.size(); i++)
