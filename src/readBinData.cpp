@@ -296,7 +296,7 @@ void extern readBinData(vector<Individual*> & sample, vector<Locus*> & locus, ve
   if(locus.size()==0)
     error("No SNPs");
   
-  stable_sort(locus.begin(), locus.end(), less<Locus*>());
+  //stable_sort(locus.begin(), locus.end(), less<Locus*>());
   stable_sort(ordered.begin(), ordered.end());
   
   
