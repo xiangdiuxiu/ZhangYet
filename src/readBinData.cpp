@@ -3,69 +3,80 @@
 //init parameters
 Parameter par; 
 
-string extern getOutput(vector<string>& args)
+bool extern isCovar(vector<string>& args)
 {
-  string res = "";
+  bool flag = false;
   for(vector<string>::iterator it=args.begin(); it!=args.end(); it++)
-    if((*it)=="-o")
+    if((*it)=="-covar_name")
       {
-	it++;
-	res = (*it);
+	flag = true;
+	break;
       }
-  if(res=="")
-    {
-      error("No output file");
-    }
-  return res;
+  return flag;
 }
 
-void extern initParameters(vector<string>& args)
+void traitsTransform()
 {
-  vector<string>::iterator it = args.begin();
-	//par.pheno_names.push_back("auto_r_se_bend");
-	//par.pheno_names.push_back("master_al_od_bend");
-  bool lockon = false;
-
-  while(it!=args.end())
+  ofstream TEMPR;
+  TEMPR.open("TEMP.R", ios::out);
+  TEMPR<<"source("
+       <<'\"'<<"./R/TraitsTransform.R"<<'\"'
+       <<")\n";  // source("./R/Traitstransform.R")
+  
+  string pnames = "c(";
+  pnames += '\"';
+  for(int i=0; i<par.pheno_names.size(); i++)
     {
-      string temp = (*it);
-      if(temp=="-bfile")
+      pnames += par.pheno_names[i];
+      if(i!=(par.pheno_names.size()-1))
 	{
-	  it++; lockon = false;
-	  par.famfile = (*it)+".fam";
-	  par.snpfile = (*it)+".bim";
-	  par.bitfile = (*it)+".bed";
-	  it++;
-	}
-      else if(temp=="-phenofile")
-	{
-	  it++; lockon = false;
-	  par.phenofile = (*it);
-	  it++;
-	}
-      else if(temp=="-phenotypes")
-	{
-	  lockon = true;
-	  it++;
-	}
-      else if(temp=="-o")
-	{
-	  lockon = false;
-	  it++;
+	  pnames += '\"'; pnames += ", "; pnames += '\"';
 	}
       else
 	{
-	  if(lockon)
-	    {
-	      par.pheno_names.push_back(*it);
-	      it++;
-	    }
-	  else
-	    it++;
+	  pnames += '\"'; pnames += ")";
 	}
-      
+    } // pnames: c("pnames1", "pnames2", ... , "pnamesN")
+  
+  string ptypes = "c(";
+  for(int i=0; i<par.pheno_types.size(); i++)
+    {
+      ptypes += par.pheno_types[i];
+      if(i!=(par.pheno_types.size()-1))
+	{
+	  ptypes += ", ";
+	}
+      else
+	{
+	  ptypes += ")";
+	}// ptypes: c(ptypes1, ptypes2, ... , ptypesN)
     }
-  cout<<"phenotypes: "<<par.pheno_names.size()<<endl;
+  string covars = "c(";
+  covars += '\"';
+  for(int i=0; i<par.covar_names.size(); i++)
+    {
+      covars += par.covar_names[i];
+      if(i!=(par.covar_names.size()-1))
+	{
+	  covars += '\"'; covars += ", "; covars += '\"';
+	}
+      else
+	{
+	  covars += '\"'; covars += ")";
+	}
+    } // covars: c("covars1", "covars2", ... ,"covarsN")
+
+  TEMPR<<"file.trf(phenofile="
+       <<'\"'<<par.phenofile<<'\"'
+       <<", famfile="
+       <<'\"'<<par.famfile<<'\"'
+       <<", phenotypes="<<pnames
+       <<", pheno_type="<<ptypes
+       <<", covar_name="<<covars<<")\n";
+  TEMPR.close();
+  string CMD = "R CMD BATCH TEMP.R";
+  system(CMD.c_str());
+  
 }
 
 void extern error(string msg)
@@ -89,6 +100,102 @@ void checkFileExists(string f)
   return;
   
 }
+
+
+string extern getOutput(vector<string>& args)
+{
+  string res = "";
+  for(vector<string>::iterator it=args.begin(); it!=args.end(); it++)
+    if((*it)=="-o")
+      {
+	it++;
+	res = (*it);
+      }
+  if(res=="")
+    {
+      error("No output file");
+    }
+  return res;
+}
+
+void extern initParameters(vector<string>& args, bool flag)
+{
+  vector<string>::iterator it = args.begin();
+	//par.pheno_names.push_back("auto_r_se_bend");
+	//par.pheno_names.push_back("master_al_od_bend");
+  bool lockon = false;
+  bool ptypeflag = false;
+  bool covarflag = false;
+
+  while(it!=args.end())
+    {
+      string temp = (*it);
+      if(temp=="-bfile")
+	{
+	  it++; lockon = false; ptypeflag = false; covarflag = false;
+	  par.famfile = (*it)+".fam";
+	  par.snpfile = (*it)+".bim";
+	  par.bitfile = (*it)+".bed";
+	  it++;
+	}
+      else if(temp=="-phenofile")
+	{
+	  it++; lockon = false; ptypeflag = false; covarflag = false;
+	  par.phenofile = (*it);
+	  it++;
+	}
+      else if(temp=="-phenotypes")
+	{
+	  lockon = true; ptypeflag = false; covarflag = false;
+	  it++;
+	}
+      else if(temp=="-o")
+	{
+	  lockon = false; ptypeflag = false; covarflag = false;
+	  it++;
+	}
+      else if(temp=="-covar_name")
+	{
+	  lockon = false; ptypeflag = false; covarflag = true;
+	  it++;
+	}
+      else if(temp=="-pheno_type")
+	{
+	  lockon = false; ptypeflag = true; covarflag = true;
+	  it++;
+	}
+      else
+	{
+	  if(lockon)
+	    {
+	      par.pheno_names.push_back(*it);
+	      it++;
+	    }
+	  else if(ptypeflag)
+	    {
+	      par.pheno_types.push_back(*it);
+	      it++;
+	    }
+	  else if(covarflag)
+	    {
+	      par.covar_names.push_back(*it);
+	      it++;
+	    }
+	  else
+	    it++;
+	}
+      
+    }
+  cout<<"phenotypes: "<<par.pheno_names.size()<<endl;
+  cout<<"covar_names: "<<par.covar_names.size()<<endl;
+  if(flag)
+    {
+      traitsTransform();
+      par.phenofile += "_trf";
+      checkFileExists(par.phenofile);
+    }
+}
+
 
 template <class T>
 bool from_string(T& t, const std::string& s, std::ios_base& (*f)(std::ios_base&))
@@ -246,9 +353,9 @@ bool openBinaryFile(string s, ifstream& BIT)
   return bfile_SNP_major;
 }
 
-void extern readBinData(vector<Individual*> & sample, vector<Locus*> & locus, vector<CSNP*>& SNP, vector<string>& args)
+void extern readBinData(vector<Individual*> & sample, vector<Locus*> & locus, vector<CSNP*>& SNP, vector<string>& args, bool flag)
 {
-  initParameters(args);
+  initParameters(args, flag);
   checkFileExists(par.bitfile);
   checkFileExists(par.famfile);
   checkFileExists(par.snpfile);

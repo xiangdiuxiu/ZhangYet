@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <bitset>
+#include <stdlib.h>
 #include "Individual.h"
 #include "Locus.h"
 using namespace std;
@@ -29,6 +30,8 @@ class Parameter{
   bool SNP_major;
   
   vector<string> pheno_names;
+  vector<string> pheno_types; //This means whether a phenotype is continuous or not.
+  vector<string> covar_names; 
   int MAX_LINE_LENGTH;
   bool all_pheno;
   bool coding01;
@@ -52,6 +55,8 @@ class Parameter{
       SNP_major = false;
       
       pheno_names.resize(0);
+      pheno_types.resize(0);
+      covar_names.resize(0);
       
       MAX_LINE_LENGTH = 1000;
       all_pheno = false;

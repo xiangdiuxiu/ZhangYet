@@ -5,6 +5,7 @@ int main(int argc, char *argv[])
   //parameters
   vector<string> args(argv+1, argv+argc);
   string output = getOutput(args);
+  bool iscor = isCovar(args);
   
   //Data
   vector<Individual*> sample;
@@ -12,7 +13,7 @@ int main(int argc, char *argv[])
   vector<CSNP*> SNP;
   
   //read data from file
-  readBinData(sample, locus, SNP, args);
+  readBinData(sample, locus, SNP, args, iscor);
   cout<<"sample:"<<sample.size()<<endl;
   cout<<"locus:"<<locus.size()<<endl;
   cout<<"SNP:"<<SNP.size()<<endl;

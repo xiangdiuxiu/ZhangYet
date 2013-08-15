@@ -422,7 +422,7 @@ vector<double> extern glmAssoc(vector<Individual*>& sample, vector<Locus*>& locu
       cout<<endl;
       */
     } // end of for int l=0
-
+  ASC.close();
   return results;
 }
 

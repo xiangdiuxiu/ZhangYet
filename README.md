@@ -14,6 +14,8 @@ You can run the test.sh to check that.
     -phenofile : 
     -phenotypes : if you have more than one phenotypes, seperate them by space;
     -o : all the results will record in the output file;
+    -pheno_types :
+    -covar_names
 
 ##EXAMPLE
-    ./mplink -bfile TEST1 -phenofile phenotype_txt -phenotypes auto_r_se_bend master_al_od_bend -o ouputtest
+You can refer to sample.sh.

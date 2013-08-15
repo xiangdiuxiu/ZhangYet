@@ -17,8 +17,9 @@
 using namespace std;
 
 //function table
+bool extern isCovar(vector<string>&);
 string extern getOutput(vector<string>&);
-void extern readBinData(vector<Individual*>&, vector<Locus*>&, vector<CSNP*>&, vector<string>&);
+void extern readBinData(vector<Individual*>&, vector<Locus*>&, vector<CSNP*>&, vector<string>&, bool);
 void extern readPhenoFile(vector<Individual*>&, vector<Locus*>&, vector<CSNP*>&);
 vector<double> extern glmAssoc(vector<Individual*>&, vector<Locus*>&, vector<CSNP*>&, string);
 
