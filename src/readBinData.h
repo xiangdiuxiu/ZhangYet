@@ -38,6 +38,8 @@ class Parameter{
 
   string outputfile;
 
+  string Rpath;
+  
   Parameter()
     {
       famfile = "";

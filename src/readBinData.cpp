@@ -15,12 +15,12 @@ bool extern isCovar(vector<string>& args)
   return flag;
 }
 
-void traitsTransform()
+void traitsTransform(string rpath)
 {
   ofstream TEMPR;
   TEMPR.open("TEMP.R", ios::out);
   TEMPR<<"source("
-       <<'\"'<<"./R/TraitsTransform.R"<<'\"'
+       <<'\"'<<rpath<<"/TraitsTransform.R"<<'\"'
        <<")\n";  // source("./R/Traitstransform.R")
   
   string pnames = "c(";
@@ -144,6 +144,12 @@ void extern initParameters(vector<string>& args, bool flag)
 	  par.phenofile = (*it);
 	  it++;
 	}
+      else if(temp=="-Rpath")
+	{
+	  it++; lockon = false; ptypeflag = false; covarflag = false;
+	  par.Rpath = (*it);
+	  it++;
+	}
       else if(temp=="-phenotypes")
 	{
 	  lockon = true; ptypeflag = false; covarflag = false;
@@ -190,7 +196,7 @@ void extern initParameters(vector<string>& args, bool flag)
   cout<<"covar_names: "<<par.covar_names.size()<<endl;
   if(flag)
     {
-      traitsTransform();
+      traitsTransform(par.Rpath);
       par.phenofile += "_trf";
       checkFileExists(par.phenofile);
     }

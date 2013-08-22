@@ -3,4 +3,4 @@ all:src/main.cpp src/main.h src/readBinData.cpp src/readBinData.h src/matrix.cpp
 
 install:
 	-mkdir -p $(RPM_INSTALL_ROOT)/usr/local/bin/
-	install -m 755 mplink /usr/local/bin/mplink
+	install -m 755 mplink $(RPM_INSTALL_ROOT)/usr/local/bin/mplink
